@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste de Courses</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 10px; background: #f5f5f5; }
+        .product { background: #fff; border-radius: 8px; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; }
+        .product img { width: 100px; margin-bottom: 10px; }
+        .product-info { flex: 1; }
+        .actions { display: flex; align-items: center; gap: 10px; }
+        .cart { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 10px; border-top: 1px solid #ccc; }
+        .quantity { width: 40px; text-align: center; }
+        button { padding: 5px 10px; }
+    </style>
+</head>
+<body>
+
+<h2>Ma Liste de Courses</h2>
+<div id="products"></div>
+
+<div class="cart">
+    <strong>Total : <span id="total">0.00</span> €</strong>
+</div>
+
+<script>
+    const products = [
+        { name: "Céréale Lion", weight: "675g", price: 4.45 },
+        { name: "Brioche Chabrior", weight: "500g", price: 1.65 },
+        { name: "Pain au lait x10", weight: "350g", price: 1.04 },
+        { name: "Nutella", weight: "1kg", price: 5.70 },
+        { name: "Sucre en poudre", weight: "1kg", price: 1.40 }
+    ];
+
+    const cart = {};
+
+    function updateTotal() {
+        let total = 0;
+        for (let item in cart) {
+            total += cart[item].price * cart[item].qty;
+        }
+        document.getElementById('total').textContent = total.toFixed(2);
+    }
+
+    function renderProducts() {
+        const container = document.getElementById("products");
+        container.innerHTML = '';
+        products.forEach((product, index) => {
+            const div = document.createElement("div");
+            div.className = "product";
+            div.innerHTML = `
+                <div class="product-info">
+                    <strong>${product.name}</strong><br>
+                    ${product.weight} - ${product.price.toFixed(2)} €
+                </div>
+                <div class="actions">
+                    <button onclick="changeQty(${index}, -1)">-</button>
+                    <input class="quantity" id="qty-${index}" value="0" readonly>
+                    <button onclick="changeQty(${index}, 1)">+</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function changeQty(index, delta) {
+        const product = products[index];
+        if (!cart[product.name]) cart[product.name] = { ...product, qty: 0 };
+        cart[product.name].qty = Math.max(0, cart[product.name].qty + delta);
+        document.getElementById(`qty-${index}`).value = cart[product.name].qty;
+        updateTotal();
+    }
+
+    renderProducts();
+</script>
+
+</body>
+</html>
